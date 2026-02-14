@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💰 Contabilidad Lotto</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 5px;
+        }
+        
+        header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .tab-btn {
+            padding: 12px 25px;
+            border: none;
+            background: white;
+            color: #667eea;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .tab-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+        
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: fadeIn 0.3s;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        button.btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+        }
+        
+        button.btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .records-list {
+            margin-top: 30px;
+        }
+        
+        .record-item {
+            background: #f8f9ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 5px solid #667eea;
+        }
+        
+        .record-info {
+            flex: 1;
+        }
+        
+        .record-description {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .record-date {
+            color: #999;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        
+        .record-amount {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .btn-delete {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 15px;
+            transition: all 0.3s;
+        }
+        
+        .btn-delete:hover {
+            background: #ff5252;
+        }
+        
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .summary-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .summary-card h3 {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+        
+        .summary-card .amount {
+            font-size: 2em;
+            font-weight: 700;
+        }
+        
+        .summary-card.positive {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+        
+        .summary-card.negative {
+            background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+        }
+        
+        .export-btn {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: all 0.3s;
+        }
+        
+        .export-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+        
+        .no-records {
+            text-align: center;
+            color: #999;
+            padding: 40px;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💰 Contabilidad Lotto</h1>
+            <p>Gestiona tus ventas, gastos y nómina de forma fácil</p>
+        </header>
+        
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('ventas')">📊 Ventas</button>
+            <button class="tab-btn" onclick="switchTab('gastos')">💸 Gastos</button>
+            <button class="tab-btn" onclick="switchTab('nomina')">👥 Nómina</button>
+            <button class="tab-btn" onclick="switchTab('fijos')">🏢 Gastos Fijos</button>
+            <button class="tab-btn" onclick="switchTab('reportes')">📈 Reportes</button>
+        </div>
+        
+        <!-- TAB: VENTAS -->
+        <div id="ventas" class="tab-content active">
+            <h2>📊 Registro de Ventas</h2>
+            <form onsubmit="agregarVenta(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="venta-desc">Descripción</label>
+                        <input type="text" id="venta-desc" placeholder="Ej: Venta de productos" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="venta-monto">Monto (RD$)</label>
+                        <input type="number" id="venta-monto" placeholder="0.00" step="0.01" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="venta-fecha">Fecha</label>
+                    <input type="date" id="venta-fecha" required>
+                </div>
+                <button type="submit" class="btn-submit">✅ Agregar Venta</button>
+            </form>
+            <div class="records-list" id="ventas-list"></div>
+        </div>
+        
+        <!-- TAB: GASTOS DIARIOS -->
+        <div id="gastos" class="tab-content">
+            <h2>💸 Gastos Diarios</h2>
+            <form onsubmit="agregarGasto(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="gasto-desc">Descripción</label>
+                        <input type="text" id="gasto-desc" placeholder="Ej: Suministros" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="gasto-monto">Monto (RD$)</label>
+                        <input type="number" id="gasto-monto" placeholder="0.00" step="0.01" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="gasto-fecha">Fecha</label>
+                    <input type="date" id="gasto-fecha" required>
+                </div>
+                <button type="submit" class="btn-submit">✅ Agregar Gasto</button>
+            </form>
+            <div class="records-list" id="gastos-list"></div>
+        </div>
+        
+        <!-- TAB: NÓMINA -->
+        <div id="nomina" class="tab-content">
+            <h2>👥 Pagos de Nómina</h2>
+            <form onsubmit="agregarNomina(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nomina-empleado">Empleado</label>
+                        <input type="text" id="nomina-empleado" placeholder="Nombre del empleado" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nomina-monto">Monto (RD$)</label>
+                        <input type="number" id="nomina-monto" placeholder="0.00" step="0.01" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="nomina-fecha">Fecha</label>
+                    <input type="date" id="nomina-fecha" required>
+                </div>
+                <button type="submit" class="btn-submit">✅ Registrar Pago</button>
+            </form>
+            <div class="records-list" id="nomina-list"></div>
+        </div>
+        
+        <!-- TAB: GASTOS FIJOS -->
+        <div id="fijos" class="tab-content">
+            <h2>🏢 Gastos Fijos</h2>
+            <form onsubmit="agregarGastoFijo(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="fijo-desc">Descripción</label>
+                        <input type="text" id="fijo-desc" placeholder="Ej: Alquiler, Servicios" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="fijo-monto">Monto Mensual (RD$)</label>
+                        <input type="number" id="fijo-monto" placeholder="0.00" step="0.01" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit">✅ Agregar Gasto Fijo</button>
+            </form>
+            <div class="records-list" id="fijos-list"></div>
+        </div>
+        
+        <!-- TAB: REPORTES -->
+        <div id="reportes" class="tab-content">
+            <h2>📈 Resumen y Reportes</h2>
+            <div class="summary" id="resumen-cards"></div>
+            <button class="export-btn" onclick="exportarACSV()">📥 Descargar CSV</button>
+            <button class="export-btn" onclick="copiarAlPortapapeles()">📋 Copiar a Google Sheets</button>
+        </div>
+    </div>
+    
+    <script>
+        // Inicializar datos
+        function inicializar() {
+            if (!localStorage.getItem('ventas')) localStorage.setItem('ventas', JSON.stringify([]));
+            if (!localStorage.getItem('gastos')) localStorage.setItem('gastos', JSON.stringify([]));
+            if (!localStorage.getItem('nomina')) localStorage.setItem('nomina', JSON.stringify([]));
+            if (!localStorage.getItem('fijos')) localStorage.setItem('fijos', JSON.stringify([]));
+            setFechaHoy();
+            cargarTodos();
+        }
+        
+        function setFechaHoy() {
+            const hoy = new Date().toISOString().split('T')[0];
+            document.getElementById('venta-fecha').value = hoy;
+            document.getElementById('gasto-fecha').value = hoy;
+            document.getElementById('nomina-fecha').value = hoy;
+        }
+        
+        // Cambiar pestañas
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tab).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (tab === 'reportes') {
+                actualizarReportes();
+            }
+        }
+        
+        // VENTAS
+        function agregarVenta(e) {
+            e.preventDefault();
+            const venta = {
+                id: Date.now(),
+                descripcion: document.getElementById('venta-desc').value,
+                monto: parseFloat(document.getElementById('venta-monto').value),
+                fecha: document.getElementById('venta-fecha').value
+            };
+            let ventas = JSON.parse(localStorage.getItem('ventas'));
+            ventas.push(venta);
+            localStorage.setItem('ventas', JSON.stringify(ventas));
+            cargarVentas();
+            document.querySelector('#ventas form').reset();
+            setFechaHoy();
+        }
+        
+        function cargarVentas() {
+            const ventas = JSON.parse(localStorage.getItem('ventas'));
+            const lista = document.getElementById('ventas-list');
+            lista.innerHTML = '';
+            if (ventas.length === 0) {
+                lista.innerHTML = '<div class="no-records">No hay ventas registradas</div>';
+                return;
+            }
+            ventas.forEach(venta => {
+                lista.innerHTML += `
+                    <div class="record-item">
+                        <div class="record-info">
+                            <div class="record-description">${venta.descripcion}</div>
+                            <div class="record-date">${venta.fecha}</div>
+                        </div>
+                        <div class="record-amount">RD$ ${venta.monto.toFixed(2)}</div>
+                        <button class="btn-delete" onclick="eliminarVenta(${venta.id})">🗑️</button>
+                    </div>
+                `;
+            });
+        }
+        
+        function eliminarVenta(id) {
+            let ventas = JSON.parse(localStorage.getItem('ventas'));
+            ventas = ventas.filter(v => v.id !== id);
+            localStorage.setItem('ventas', JSON.stringify(ventas));
+            cargarVentas();
+        }
+        
+        // GASTOS
+        function agregarGasto(e) {
+            e.preventDefault();
+            const gasto = {
+                id: Date.now(),
+                descripcion: document.getElementById('gasto-desc').value,
+                monto: parseFloat(document.getElementById('gasto-monto').value),
+                fecha: document.getElementById('gasto-fecha').value
+            };
+            let gastos = JSON.parse(localStorage.getItem('gastos'));
+            gastos.push(gasto);
+            localStorage.setItem('gastos', JSON.stringify(gastos));
+            cargarGastos();
+            document.querySelector('#gastos form').reset();
+            setFechaHoy();
+        }
+        
+        function cargarGastos() {
+            const gastos = JSON.parse(localStorage.getItem('gastos'));
+            const lista = document.getElementById('gastos-list');
+            lista.innerHTML = '';
+            if (gastos.length === 0) {
+                lista.innerHTML = '<div class="no-records">No hay gastos registrados</div>';
+                return;
+            }
+            gastos.forEach(gasto => {
+                lista.innerHTML += `
+                    <div class="record-item">
+                        <div class="record-info">
+                            <div class="record-description">${gasto.descripcion}</div>
+                            <div class="record-date">${gasto.fecha}</div>
+                        </div>
+                        <div class="record-amount">RD$ ${gasto.monto.toFixed(2)}</div>
+                        <button class="btn-delete" onclick="eliminarGasto(${gasto.id})">🗑️</button>
+                    </div>
+                `;
+            });
+        }
+        
+        function eliminarGasto(id) {
+            let gastos = JSON.parse(localStorage.getItem('gastos'));
+            gastos = gastos.filter(g => g.id !== id);
+            localStorage.setItem('gastos', JSON.stringify(gastos));
+            cargarGastos();
+        }
+        
+        // NÓMINA
+        function agregarNomina(e) {
+            e.preventDefault();
+            const nomina = {
+                id: Date.now(),
+                empleado: document.getElementById('nomina-empleado').value,
+                monto: parseFloat(document.getElementById('nomina-monto').value),
+                fecha: document.getElementById('nomina-fecha').value
+            };
+            let nominas = JSON.parse(localStorage.getItem('nomina'));
+            nominas.push(nomina);
+            localStorage.setItem('nomina', JSON.stringify(nominas));
+            cargarNomina();
+            document.querySelector('#nomina form').reset();
+            setFechaHoy();
+        }
+        
+        function cargarNomina() {
+            const nominas = JSON.parse(localStorage.getItem('nomina'));
+            const lista = document.getElementById('nomina-list');
+            lista.innerHTML = '';
+            if (nominas.length === 0) {
+                lista.innerHTML = '<div class="no-records">No hay pagos de nómina registrados</div>';
+                return;
+            }
+            nominas.forEach(nomina => {
+                lista.innerHTML += `
+                    <div class="record-item">
+                        <div class="record-info">
+                            <div class="record-description">👤 ${nomina.empleado}</div>
+                            <div class="record-date">${nomina.fecha}</div>
+                        </div>
+                        <div class="record-amount">RD$ ${nomina.monto.toFixed(2)}</div>
+                        <button class="btn-delete" onclick="eliminarNomina(${nomina.id})">🗑️</button>
+                    </div>
+                `;
+            });
+        }
+        
+        function eliminarNomina(id) {
+            let nominas = JSON.parse(localStorage.getItem('nomina'));
+            nominas = nominas.filter(n => n.id !== id);
+            localStorage.setItem('nomina', JSON.stringify(nominas));
+            cargarNomina();
+        }
+        
+        // GASTOS FIJOS
+        function agregarGastoFijo(e) {
+            e.preventDefault();
+            const fijo = {
+                id: Date.now(),
+                descripcion: document.getElementById('fijo-desc').value,
+                monto: parseFloat(document.getElementById('fijo-monto').value)
+            };
+            let fijos = JSON.parse(localStorage.getItem('fijos'));
+            fijos.push(fijo);
+            localStorage.setItem('fijos', JSON.stringify(fijos));
+            cargarFijos();
+            document.querySelector('#fijos form').reset();
+        }
+        
+        function cargarFijos() {
+            const fijos = JSON.parse(localStorage.getItem('fijos'));
+            const lista = document.getElementById('fijos-list');
+            lista.innerHTML = '';
+            if (fijos.length === 0) {
+                lista.innerHTML = '<div class="no-records">No hay gastos fijos registrados</div>';
+                return;
+            }
+            fijos.forEach(fijo => {
+                lista.innerHTML += `
+                    <div class="record-item">
+                        <div class="record-info">
+                            <div class="record-description">${fijo.descripcion}</div>
+                            <div class="record-date">Gasto Mensual</div>
+                        </div>
+                        <div class="record-amount">RD$ ${fijo.monto.toFixed(2)}</div>
+                        <button class="btn-delete" onclick="eliminarFijo(${fijo.id})">🗑️</button>
+                    </div>
+                `;
+            });
+        }
+        
+        function eliminarFijo(id) {
+            let fijos = JSON.parse(localStorage.getItem('fijos'));
+            fijos = fijos.filter(f => f.id !== id);
+            localStorage.setItem('fijos', JSON.stringify(fijos));
+            cargarFijos();
+        }
+        
+        // REPORTES
+        function actualizarReportes() {
+            const ventas = JSON.parse(localStorage.getItem('ventas'));
+            const gastos = JSON.parse(localStorage.getItem('gastos'));
+            const nomina = JSON.parse(localStorage.getItem('nomina'));
+            const fijos = JSON.parse(localStorage.getItem('fijos'));
+            
+            const totalVentas = ventas.reduce((sum, v) => sum + v.monto, 0);
+            const totalGastos = gastos.reduce((sum, g) => sum + g.monto, 0);
+            const totalNomina = nomina.reduce((sum, n) => sum + n.monto, 0);
+            const totalFijos = fijos.reduce((sum, f) => sum + f.monto, 0);
+            const totalGastosAll = totalGastos + totalNomina + totalFijos;
+            const ganancia = totalVentas - totalGastosAll;
+            
+            const html = `
+                <div class="summary-card positive">
+                    <h3>💰 Total Ventas</h3>
+                    <div class="amount">RD$ ${totalVentas.toFixed(2)}</div>
+                </div>
+                <div class="summary-card negative">
+                    <h3>💸 Gastos Diarios</h3>
+                    <div class="amount">RD$ ${totalGastos.toFixed(2)}</div>
+                </div>
+                <div class="summary-card negative">
+                    <h3>👥 Nómina Total</h3>
+                    <div class="amount">RD$ ${totalNomina.toFixed(2)}</div>
+                </div>
+                <div class="summary-card negative">
+                    <h3>🏢 Gastos Fijos</h3>
+                    <div class="amount">RD$ ${totalFijos.toFixed(2)}</div>
+                </div>
+                <div class="summary-card ${ganancia >= 0 ? 'positive' : 'negative'}">
+                    <h3>${ganancia >= 0 ? '📈 Ganancia Neta' : '📉 Pérdida'}</h3>
+                    <div class="amount">RD$ ${ganancia.toFixed(2)}</div>
+                </div>
+            `;
+            document.getElementById('resumen-cards').innerHTML = html;
+        }
+        
+        function cargarTodos() {
+            cargarVentas();
+            cargarGastos();
+            cargarNomina();
+            cargarFijos();
+        }
+        
+        function exportarACSV() {
+            const ventas = JSON.parse(localStorage.getItem('ventas'));
+            const gastos = JSON.parse(localStorage.getItem('gastos'));
+            const nomina = JSON.parse(localStorage.getItem('nomina'));
+            const fijos = JSON.parse(localStorage.getItem('fijos'));
+            
+            let csv = 'TIPO,DESCRIPCIÓN,MONTO,FECHA\n';
+            
+            ventas.forEach(v => {
+                csv += `VENTA,"${v.descripcion}",${v.monto},${v.fecha}\n`;
+            });
+            gastos.forEach(g => {
+                csv += `GASTO,"${g.descripcion}",${g.monto},${g.fecha}\n`;
+            });
+            nomina.forEach(n => {
+                csv += `NOMINA,"${n.empleado}",${n.monto},${n.fecha}\n`;
+            });
+            fijos.forEach(f => {
+                csv += `FIJO,"${f.descripcion}",${f.monto},\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Contabilidad_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+        }
+        
+        function copiarAlPortapapeles() {
+            const ventas = JSON.parse(localStorage.getItem('ventas'));
+            const gastos = JSON.parse(localStorage.getItem('gastos'));
+            const nomina = JSON.parse(localStorage.getItem('nomina'));
+            const fijos = JSON.parse(localStorage.getItem('fijos'));
+            
+            let texto = 'TIPO\tDESCRIPCIÓN\tMONTO\tFECHA\n';
+            
+            ventas.forEach(v => {
+                texto += `VENTA\t${v.descripcion}\t${v.monto}\t${v.fecha}\n`;
+            });
+            gastos.forEach(g => {
+                texto += `GASTO\t${g.descripcion}\t${g.monto}\t${g.fecha}\n`;
+            });
+            nomina.forEach(n => {
+                texto += `NOMINA\t${n.empleado}\t${n.monto}\t${n.fecha}\n`;
+            });
+            fijos.forEach(f => {
+                texto += `FIJO\t${f.descripcion}\t${f.monto}\t\n`;
+            });
+            
+            navigator.clipboard.writeText(texto).then(() => {
+                alert('✅ Datos copiados al portapapeles. Ahora pégalos en Google Sheets (Ctrl+V)');
+            });
+        }
+        
+        // Inicializar cuando carga la página
+        window.addEventListener('load', inicializar);
+    </script>
+</body>
+</html>
