@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timezone Clock</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .clock { margin: 20px; font-size: 24px; }
+    </style>
+    <script>
+        function updateClocks() {
+            const timezones = [
+                { name: 'UTC', offset: 0 },
+                { name: 'EST', offset: -5 },
+                { name: 'CST', offset: -6 },
+                { name: 'MST', offset: -7 },
+                { name: 'PST', offset: -8 },
+                { name: 'CET', offset: 1 }
+            ];
+            const date = new Date();
+            const clocksDiv = document.getElementById('clocks');
+            clocksDiv.innerHTML = ''; // Clear previous clocks
+            timezones.forEach(tz => {
+                const timezoneDate = new Date(date.getTime() + (tz.offset * 3600 * 1000));
+                const timeString = timezoneDate.toUTCString();
+                clocksDiv.innerHTML += `<div class='clock'>${tz.name}: ${timeString}</div>`;
+            });
+        }
+        setInterval(updateClocks, 1000);
+        window.onload = updateClocks;
+    </script>
+</head>
+<body>
+    <h1>Digital Multi-Timezone Clock</h1>
+    <div id="clocks"></div>
+</body>
+</html>
