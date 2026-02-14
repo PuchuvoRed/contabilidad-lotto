@@ -3,16 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contabilidad Negocio</title>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Contabilidad Lotto</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <div id="root"></div>
-    <script type="text/babel">
-        // Aquí pegarías todo el código React de la aplicación
-    </script>
+    <div class="container">
+        <header>
+            <h1>💰 Contabilidad Lotto</h1>
+            <p>Gestiona tus ventas, gastos y nómina de forma fácil</p>
+        </header>
+        
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="ventas">📊 Ventas</button>
+            <button class="tab-btn" data-tab="gastos">💸 Gastos</button>
+            <button class="tab-btn" data-tab="nomina">👥 Nómina</button>
+            <button class="tab-btn" data-tab="fijos">🏢 Gastos Fijos</button>
+            <button class="tab-btn" data-tab="reportes">📈 Reportes</button>
+        </div>
+        
+        <!-- TAB: VENTAS -->
+        <div id="ventas" class="tab-content active">
+            <h2>📊 Registro de Ventas</h2>
+            <form onsubmit="App.addVenta(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="venta-desc">Descripción *</label>
+                        <input type="text" id="venta-desc" placeholder="Ej: Venta de productos" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="venta-monto">Monto (RD$) *</label>
+                        <input type="number" id="venta-monto" placeholder="0.00" step="0.01" min="0.01" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="venta-fecha">Fecha *</label>
+                    <input type="date" id="venta-fecha" required>
+                </div>
+                <button type="submit" class="btn-submit">✅ Agregar Venta</button>
+            </form>
+            <div class="records-list" id="ventas-list"></div>
+        </div>
+        
+        <!-- TAB: GASTOS DIARIOS -->
+        <div id="gastos" class="tab-content">
+            <h2>💸 Gastos Diarios</h2>
+            <form onsubmit="App.addGasto(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="gasto-desc">Descripción *</label>
+                        <input type="text" id="gasto-desc" placeholder="Ej: Suministros" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="gasto-monto">Monto (RD$) *</label>
+                        <input type="number" id="gasto-monto" placeholder="0.00" step="0.01" min="0.01" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="gasto-fecha">Fecha *</label>
+                    <input type="date" id="gasto-fecha" required>
+                </div>
+                <button type="submit" class="btn-submit">✅ Agregar Gasto</button>
+            </form>
+            <div class="records-list" id="gastos-list"></div>
+        </div>
+        
+        <!-- TAB: NÓMINA -->
+        <div id="nomina" class="tab-content">
+            <h2>👥 Pagos de Nómina</h2>
+            <form onsubmit="App.addNomina(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nomina-empleado">Empleado *</label>
+                        <input type="text" id="nomina-empleado" placeholder="Nombre del empleado" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nomina-monto">Monto (RD$) *</label>
+                        <input type="number" id="nomina-monto" placeholder="0.00" step="0.01" min="0.01" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="nomina-fecha">Fecha *</label>
+                    <input type="date" id="nomina-fecha" required>
+                </div>
+                <button type="submit" class="btn-submit">✅ Registrar Pago</button>
+            </form>
+            <div class="records-list" id="nomina-list"></div>
+        </div>
+        
+        <!-- TAB: GASTOS FIJOS -->
+        <div id="fijos" class="tab-content">
+            <h2>🏢 Gastos Fijos</h2>
+            <form onsubmit="App.addGastoFijo(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="fijo-desc">Descripción *</label>
+                        <input type="text" id="fijo-desc" placeholder="Ej: Alquiler, Servicios" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="fijo-monto">Monto Mensual (RD$) *</label>
+                        <input type="number" id="fijo-monto" placeholder="0.00" step="0.01" min="0.01" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit">✅ Agregar Gasto Fijo</button>
+            </form>
+            <div class="records-list" id="fijos-list"></div>
+        </div>
+        
+        <!-- TAB: REPORTES -->
+        <div id="reportes" class="tab-content">
+            <h2>📈 Resumen y Reportes</h2>
+            <div class="summary" id="resumen-cards"></div>
+            <button class="export-btn" onclick="ExportData.downloadCSV()">📥 Descargar CSV</button>
+            <button class="export-btn" onclick="ExportData.copyToClipboard()">📋 Copiar a Google Sheets</button>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="js/storage.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/export.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>
