@@ -1,0 +1,14 @@
+# Old backup files
+index-old.html
+*.txt
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
