@@ -41,7 +41,8 @@ const Storage = {
     // Agregar nuevo registro
     add(key, item) {
         const data = this.get(key);
-        item.id = Date.now();
+        // Generate more robust ID to avoid collisions
+        item.id = Date.now() + Math.random();
         data.push(item);
         return this.set(key, data);
     },

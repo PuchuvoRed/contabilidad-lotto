@@ -1,6 +1,17 @@
 // export.js - Funcionalidad de exportación de datos
 
 const ExportData = {
+    // Sanitizar datos para prevenir CSV injection
+    sanitizeCSV(value) {
+        if (!value) return '';
+        const str = String(value);
+        // Si comienza con caracteres peligrosos, agregar un espacio
+        if (str.match(/^[=+\-@]/)) {
+            return ' ' + str;
+        }
+        return str;
+    },
+
     // Exportar a CSV
     toCSV() {
         const ventas = Storage.get('ventas');
@@ -12,22 +23,22 @@ const ExportData = {
 
         // Agregar ventas
         ventas.forEach(v => {
-            csv += `VENTA,"${v.descripcion}",${v.monto},${v.fecha}\n`;
+            csv += `VENTA,"${this.sanitizeCSV(v.descripcion)}",${v.monto},${v.fecha}\n`;
         });
 
         // Agregar gastos
         gastos.forEach(g => {
-            csv += `GASTO,"${g.descripcion}",${g.monto},${g.fecha}\n`;
+            csv += `GASTO,"${this.sanitizeCSV(g.descripcion)}",${g.monto},${g.fecha}\n`;
         });
 
         // Agregar nómina
         nomina.forEach(n => {
-            csv += `NOMINA,"${n.empleado}",${n.monto},${n.fecha}\n`;
+            csv += `NOMINA,"${this.sanitizeCSV(n.empleado)}",${n.monto},${n.fecha}\n`;
         });
 
         // Agregar gastos fijos
         fijos.forEach(f => {
-            csv += `FIJO,"${f.descripcion}",${f.monto},\n`;
+            csv += `FIJO,"${this.sanitizeCSV(f.descripcion)}",${f.monto},\n`;
         });
 
         return csv;
@@ -71,22 +82,22 @@ const ExportData = {
 
             // Agregar ventas
             ventas.forEach(v => {
-                texto += `VENTA\t${v.descripcion}\t${v.monto}\t${v.fecha}\n`;
+                texto += `VENTA\t${this.sanitizeCSV(v.descripcion)}\t${v.monto}\t${v.fecha}\n`;
             });
 
             // Agregar gastos
             gastos.forEach(g => {
-                texto += `GASTO\t${g.descripcion}\t${g.monto}\t${g.fecha}\n`;
+                texto += `GASTO\t${this.sanitizeCSV(g.descripcion)}\t${g.monto}\t${g.fecha}\n`;
             });
 
             // Agregar nómina
             nomina.forEach(n => {
-                texto += `NOMINA\t${n.empleado}\t${n.monto}\t${n.fecha}\n`;
+                texto += `NOMINA\t${this.sanitizeCSV(n.empleado)}\t${n.monto}\t${n.fecha}\n`;
             });
 
             // Agregar gastos fijos
             fijos.forEach(f => {
-                texto += `FIJO\t${f.descripcion}\t${f.monto}\t\n`;
+                texto += `FIJO\t${this.sanitizeCSV(f.descripcion)}\t${f.monto}\t\n`;
             });
 
             // Copiar al portapapeles

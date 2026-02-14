@@ -38,6 +38,8 @@ const UI = {
         records.forEach(record => {
             const recordDiv = document.createElement('div');
             recordDiv.className = 'record-item';
+            recordDiv.setAttribute('data-id', record.id);
+            recordDiv.setAttribute('data-type', type);
             recordDiv.innerHTML = this.getRecordHTML(record, type);
             container.appendChild(recordDiv);
         });
@@ -45,7 +47,7 @@ const UI = {
 
     // Generar HTML para un registro
     getRecordHTML(record, type) {
-        const description = type === 'nomina' ? `👤 ${record.empleado}` : record.descripcion;
+        const description = type === 'nomina' ? `👤 ${this.escapeHtml(record.empleado)}` : this.escapeHtml(record.descripcion);
         const dateText = record.fecha || 'Gasto Mensual';
         
         return `
@@ -54,9 +56,16 @@ const UI = {
                 <div class="record-date">${dateText}</div>
             </div>
             <div class="record-amount">RD$ ${this.formatCurrency(record.monto)}</div>
-            <button class="btn-edit" onclick="App.editRecord('${type}', ${record.id})">✏️</button>
-            <button class="btn-delete" onclick="App.deleteRecord('${type}', ${record.id})">🗑️</button>
+            <button class="btn-edit" data-action="edit">✏️</button>
+            <button class="btn-delete" data-action="delete">🗑️</button>
         `;
+    },
+
+    // Escape HTML para prevenir XSS
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     },
 
     // Formatear moneda

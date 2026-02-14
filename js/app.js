@@ -18,6 +18,33 @@ const App = {
                 UI.switchTab(tab);
             });
         });
+
+        // Event delegation para botones de editar y eliminar
+        document.addEventListener('click', (e) => {
+            const target = e.target;
+            
+            // Botón de eliminar
+            if (target.classList.contains('btn-delete') || target.closest('.btn-delete')) {
+                const button = target.classList.contains('btn-delete') ? target : target.closest('.btn-delete');
+                const recordItem = button.closest('.record-item');
+                if (recordItem) {
+                    const id = parseFloat(recordItem.getAttribute('data-id'));
+                    const type = recordItem.getAttribute('data-type');
+                    this.deleteRecord(type, id);
+                }
+            }
+            
+            // Botón de editar
+            if (target.classList.contains('btn-edit') || target.closest('.btn-edit')) {
+                const button = target.classList.contains('btn-edit') ? target : target.closest('.btn-edit');
+                const recordItem = button.closest('.record-item');
+                if (recordItem) {
+                    const id = parseFloat(recordItem.getAttribute('data-id'));
+                    const type = recordItem.getAttribute('data-type');
+                    this.editRecord(type, id);
+                }
+            }
+        });
     },
 
     // Validar datos del formulario
@@ -29,8 +56,8 @@ const App = {
             }
         }
 
-        // Validar monto
-        if (data.monto && (isNaN(data.monto) || data.monto <= 0)) {
+        // Validar monto (debe ser un número mayor a 0)
+        if (data.monto !== undefined && (isNaN(data.monto) || data.monto <= 0)) {
             return { valid: false, message: 'El monto debe ser un número mayor a 0' };
         }
 
@@ -61,12 +88,24 @@ const App = {
             return;
         }
 
-        if (Storage.add('ventas', venta)) {
-            this.loadVentas();
-            UI.clearForm('ventas');
-            UI.showSuccess('Venta agregada correctamente');
+        // Verificar si estamos editando
+        if (this.editingRecord && this.editingRecord.type === 'ventas') {
+            venta.id = this.editingRecord.id;
+            if (Storage.update('ventas', this.editingRecord.id, venta)) {
+                this.cancelEdit('ventas');
+                this.loadVentas();
+                UI.showSuccess('Venta actualizada correctamente');
+            } else {
+                UI.showError('Error al actualizar la venta');
+            }
         } else {
-            UI.showError('Error al agregar la venta');
+            if (Storage.add('ventas', venta)) {
+                this.loadVentas();
+                UI.clearForm('ventas');
+                UI.showSuccess('Venta agregada correctamente');
+            } else {
+                UI.showError('Error al agregar la venta');
+            }
         }
     },
 
@@ -91,12 +130,24 @@ const App = {
             return;
         }
 
-        if (Storage.add('gastos', gasto)) {
-            this.loadGastos();
-            UI.clearForm('gastos');
-            UI.showSuccess('Gasto agregado correctamente');
+        // Verificar si estamos editando
+        if (this.editingRecord && this.editingRecord.type === 'gastos') {
+            gasto.id = this.editingRecord.id;
+            if (Storage.update('gastos', this.editingRecord.id, gasto)) {
+                this.cancelEdit('gastos');
+                this.loadGastos();
+                UI.showSuccess('Gasto actualizado correctamente');
+            } else {
+                UI.showError('Error al actualizar el gasto');
+            }
         } else {
-            UI.showError('Error al agregar el gasto');
+            if (Storage.add('gastos', gasto)) {
+                this.loadGastos();
+                UI.clearForm('gastos');
+                UI.showSuccess('Gasto agregado correctamente');
+            } else {
+                UI.showError('Error al agregar el gasto');
+            }
         }
     },
 
@@ -121,12 +172,24 @@ const App = {
             return;
         }
 
-        if (Storage.add('nomina', nomina)) {
-            this.loadNomina();
-            UI.clearForm('nomina');
-            UI.showSuccess('Pago de nómina registrado correctamente');
+        // Verificar si estamos editando
+        if (this.editingRecord && this.editingRecord.type === 'nomina') {
+            nomina.id = this.editingRecord.id;
+            if (Storage.update('nomina', this.editingRecord.id, nomina)) {
+                this.cancelEdit('nomina');
+                this.loadNomina();
+                UI.showSuccess('Pago de nómina actualizado correctamente');
+            } else {
+                UI.showError('Error al actualizar el pago');
+            }
         } else {
-            UI.showError('Error al registrar el pago');
+            if (Storage.add('nomina', nomina)) {
+                this.loadNomina();
+                UI.clearForm('nomina');
+                UI.showSuccess('Pago de nómina registrado correctamente');
+            } else {
+                UI.showError('Error al registrar el pago');
+            }
         }
     },
 
@@ -150,12 +213,24 @@ const App = {
             return;
         }
 
-        if (Storage.add('fijos', fijo)) {
-            this.loadFijos();
-            UI.clearForm('fijos');
-            UI.showSuccess('Gasto fijo agregado correctamente');
+        // Verificar si estamos editando
+        if (this.editingRecord && this.editingRecord.type === 'fijos') {
+            fijo.id = this.editingRecord.id;
+            if (Storage.update('fijos', this.editingRecord.id, fijo)) {
+                this.cancelEdit('fijos');
+                this.loadFijos();
+                UI.showSuccess('Gasto fijo actualizado correctamente');
+            } else {
+                UI.showError('Error al actualizar el gasto fijo');
+            }
         } else {
-            UI.showError('Error al agregar el gasto fijo');
+            if (Storage.add('fijos', fijo)) {
+                this.loadFijos();
+                UI.clearForm('fijos');
+                UI.showSuccess('Gasto fijo agregado correctamente');
+            } else {
+                UI.showError('Error al agregar el gasto fijo');
+            }
         }
     },
 
@@ -173,6 +248,9 @@ const App = {
             UI.showError('Registro no encontrado');
             return;
         }
+
+        // Cambiar a la pestaña correcta
+        UI.switchTab(type);
 
         // Llenar el formulario con los datos existentes
         if (type === 'ventas') {
@@ -192,21 +270,47 @@ const App = {
             document.getElementById('fijo-monto').value = record.monto;
         }
 
-        // Eliminar el registro antiguo
-        this.deleteRecord(type, id, true);
+        // Guardar el ID del registro en edición
+        this.editingRecord = { type, id };
+
+        // Cambiar el texto del botón
+        const form = document.querySelector(`#${type} form`);
+        const submitBtn = form.querySelector('.btn-submit');
+        submitBtn.textContent = '✏️ Actualizar ' + this.getTypeLabel(type);
+        
+        // Scroll al formulario
+        form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    },
+
+    // Obtener etiqueta del tipo
+    getTypeLabel(type) {
+        const labels = {
+            'ventas': 'Venta',
+            'gastos': 'Gasto',
+            'nomina': 'Pago',
+            'fijos': 'Gasto Fijo'
+        };
+        return labels[type] || 'Registro';
+    },
+
+    // Cancelar edición
+    cancelEdit(type) {
+        this.editingRecord = null;
+        UI.clearForm(type);
+        const form = document.querySelector(`#${type} form`);
+        const submitBtn = form.querySelector('.btn-submit');
+        submitBtn.textContent = '✅ Agregar ' + this.getTypeLabel(type);
     },
 
     // Eliminar registro
-    deleteRecord(type, id, skipConfirm = false) {
-        if (!skipConfirm && !confirm('¿Estás seguro de que deseas eliminar este registro?')) {
+    deleteRecord(type, id) {
+        if (!confirm('¿Estás seguro de que deseas eliminar este registro?')) {
             return;
         }
 
         if (Storage.delete(type, id)) {
             this.loadByType(type);
-            if (!skipConfirm) {
-                UI.showSuccess('Registro eliminado correctamente');
-            }
+            UI.showSuccess('Registro eliminado correctamente');
         } else {
             UI.showError('Error al eliminar el registro');
         }
