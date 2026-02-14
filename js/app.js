@@ -8,6 +8,16 @@
 // ========================================
 
 const DataManager = {
+    idCounter: Date.now(), // Initialize counter
+
+    /**
+     * Generate unique ID
+     * @returns {number} Unique ID
+     */
+    generateId() {
+        return this.idCounter++;
+    },
+
     /**
      * Initialize localStorage with empty arrays if not exists
      */
@@ -61,7 +71,7 @@ const DataManager = {
      */
     addItem(key, item) {
         const data = this.getData(key);
-        data.push({...item, id: Date.now()});
+        data.push({...item, id: this.generateId()});
         return this.saveData(key, data);
     },
 
