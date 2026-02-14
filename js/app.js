@@ -238,8 +238,9 @@ const UIManager = {
     /**
      * Switch between tabs
      * @param {string} tabName - Name of the tab to show
+     * @param {Event} event - The click event (optional)
      */
-    switchTab(tabName) {
+    switchTab(tabName, event) {
         // Update tab content
         document.querySelectorAll('.tab-content').forEach(el => {
             el.classList.remove('active');
@@ -250,7 +251,19 @@ const UIManager = {
         document.querySelectorAll('.tab-btn').forEach(el => {
             el.classList.remove('active');
         });
-        event?.target?.classList.add('active');
+        
+        // Find and activate the clicked button
+        if (event && event.target) {
+            event.target.classList.add('active');
+        } else {
+            // Fallback: find button by matching tab name
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => {
+                if (btn.getAttribute('onclick')?.includes(tabName)) {
+                    btn.classList.add('active');
+                }
+            });
+        }
 
         this.currentTab = tabName;
 
