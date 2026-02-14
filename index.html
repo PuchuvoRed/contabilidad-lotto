@@ -1,18 +1,365 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <!-- Meta Tags -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contabilidad Negocio</title>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Sistema de Gestión Financiera para Contabilidad Lotto. Gestiona ventas, gastos, nómina y reportes de forma fácil y eficiente.">
+    <meta name="keywords" content="contabilidad, gestión financiera, ventas, gastos, nómina, reportes, lotto, PuchuvoRed">
+    <meta name="author" content="PuchuvoRed">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="💰 Contabilidad Lotto - Sistema de Gestión Financiera">
+    <meta property="og:description" content="Gestiona tus ventas, gastos y nómina de forma fácil y eficiente">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="es_ES">
+    
+    <!-- Security Meta Tags -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#667eea">
+    <meta name="msapplication-TileColor" content="#667eea">
+    
+    <!-- Title -->
+    <title>💰 Contabilidad Lotto - Sistema de Gestión Financiera</title>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <div id="root"></div>
-    <script type="text/babel">
-        // Aquí pegarías todo el código React de la aplicación
-    </script>
+    <div class="container">
+        <!-- Header -->
+        <header role="banner">
+            <h1>💰 Contabilidad Lotto</h1>
+            <p>Gestiona tus ventas, gastos y nómina de forma fácil</p>
+            <button 
+                id="theme-toggle" 
+                class="theme-toggle" 
+                onclick="ThemeManager.toggleTheme()" 
+                aria-label="Cambiar tema de color"
+                title="Cambiar entre modo claro y oscuro">
+                🌙 Modo Oscuro
+            </button>
+        </header>
+        
+        <!-- Navigation -->
+        <nav class="tabs" role="navigation" aria-label="Navegación principal">
+            <button class="tab-btn active" onclick="UIManager.switchTab('ventas')" role="tab" aria-selected="true" aria-controls="ventas">
+                📊 Ventas
+            </button>
+            <button class="tab-btn" onclick="UIManager.switchTab('gastos')" role="tab" aria-selected="false" aria-controls="gastos">
+                💸 Gastos
+            </button>
+            <button class="tab-btn" onclick="UIManager.switchTab('nomina')" role="tab" aria-selected="false" aria-controls="nomina">
+                👥 Nómina
+            </button>
+            <button class="tab-btn" onclick="UIManager.switchTab('fijos')" role="tab" aria-selected="false" aria-controls="fijos">
+                🏢 Gastos Fijos
+            </button>
+            <button class="tab-btn" onclick="UIManager.switchTab('reportes')" role="tab" aria-selected="false" aria-controls="reportes">
+                📈 Reportes
+            </button>
+        </nav>
+        
+        <!-- Main Content -->
+        <main role="main">
+            <!-- TAB: VENTAS -->
+            <section id="ventas" class="tab-content active" role="tabpanel" aria-labelledby="ventas-tab">
+                <article>
+                    <h2>📊 Registro de Ventas</h2>
+                    
+                    <!-- Search Filter -->
+                    <div class="search-filter">
+                        <label for="search-ventas" class="visually-hidden">Buscar ventas</label>
+                        <input 
+                            type="search" 
+                            id="search-ventas" 
+                            class="search-input" 
+                            data-section="ventas"
+                            placeholder="🔍 Buscar ventas..." 
+                            aria-label="Buscar en ventas">
+                    </div>
+                    
+                    <form onsubmit="VentasManager.add(event)" aria-label="Formulario para agregar venta">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="venta-desc">Descripción *</label>
+                                <input 
+                                    type="text" 
+                                    id="venta-desc" 
+                                    placeholder="Ej: Venta de productos" 
+                                    required 
+                                    aria-required="true"
+                                    minlength="3"
+                                    maxlength="100">
+                                <span class="validation-message" role="alert"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="venta-monto">Monto (RD$) *</label>
+                                <input 
+                                    type="number" 
+                                    id="venta-monto" 
+                                    placeholder="0.00" 
+                                    step="0.01" 
+                                    min="0.01"
+                                    required 
+                                    aria-required="true">
+                                <span class="validation-message" role="alert"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="venta-fecha">Fecha *</label>
+                            <input 
+                                type="date" 
+                                id="venta-fecha" 
+                                required 
+                                aria-required="true">
+                            <span class="validation-message" role="alert"></span>
+                        </div>
+                        <button type="submit" class="btn-submit" aria-label="Agregar nueva venta">
+                            ✅ Agregar Venta
+                        </button>
+                    </form>
+                    
+                    <div class="records-list" id="ventas-list" role="list" aria-label="Lista de ventas"></div>
+                </article>
+            </section>
+            
+            <!-- TAB: GASTOS DIARIOS -->
+            <section id="gastos" class="tab-content" role="tabpanel" aria-labelledby="gastos-tab" aria-hidden="true">
+                <article>
+                    <h2>💸 Gastos Diarios</h2>
+                    
+                    <!-- Search Filter -->
+                    <div class="search-filter">
+                        <label for="search-gastos" class="visually-hidden">Buscar gastos</label>
+                        <input 
+                            type="search" 
+                            id="search-gastos" 
+                            class="search-input" 
+                            data-section="gastos"
+                            placeholder="🔍 Buscar gastos..." 
+                            aria-label="Buscar en gastos">
+                    </div>
+                    
+                    <form onsubmit="GastosManager.add(event)" aria-label="Formulario para agregar gasto">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="gasto-desc">Descripción *</label>
+                                <input 
+                                    type="text" 
+                                    id="gasto-desc" 
+                                    placeholder="Ej: Suministros" 
+                                    required 
+                                    aria-required="true"
+                                    minlength="3"
+                                    maxlength="100">
+                                <span class="validation-message" role="alert"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="gasto-monto">Monto (RD$) *</label>
+                                <input 
+                                    type="number" 
+                                    id="gasto-monto" 
+                                    placeholder="0.00" 
+                                    step="0.01" 
+                                    min="0.01"
+                                    required 
+                                    aria-required="true">
+                                <span class="validation-message" role="alert"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="gasto-fecha">Fecha *</label>
+                            <input 
+                                type="date" 
+                                id="gasto-fecha" 
+                                required 
+                                aria-required="true">
+                            <span class="validation-message" role="alert"></span>
+                        </div>
+                        <button type="submit" class="btn-submit" aria-label="Agregar nuevo gasto">
+                            ✅ Agregar Gasto
+                        </button>
+                    </form>
+                    
+                    <div class="records-list" id="gastos-list" role="list" aria-label="Lista de gastos"></div>
+                </article>
+            </section>
+            
+            <!-- TAB: NÓMINA -->
+            <section id="nomina" class="tab-content" role="tabpanel" aria-labelledby="nomina-tab" aria-hidden="true">
+                <article>
+                    <h2>👥 Pagos de Nómina</h2>
+                    
+                    <!-- Search Filter -->
+                    <div class="search-filter">
+                        <label for="search-nomina" class="visually-hidden">Buscar pagos de nómina</label>
+                        <input 
+                            type="search" 
+                            id="search-nomina" 
+                            class="search-input" 
+                            data-section="nomina"
+                            placeholder="🔍 Buscar pagos..." 
+                            aria-label="Buscar en nómina">
+                    </div>
+                    
+                    <form onsubmit="NominaManager.add(event)" aria-label="Formulario para registrar pago de nómina">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="nomina-empleado">Empleado *</label>
+                                <input 
+                                    type="text" 
+                                    id="nomina-empleado" 
+                                    placeholder="Nombre del empleado" 
+                                    required 
+                                    aria-required="true"
+                                    minlength="3"
+                                    maxlength="100">
+                                <span class="validation-message" role="alert"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="nomina-monto">Monto (RD$) *</label>
+                                <input 
+                                    type="number" 
+                                    id="nomina-monto" 
+                                    placeholder="0.00" 
+                                    step="0.01" 
+                                    min="0.01"
+                                    required 
+                                    aria-required="true">
+                                <span class="validation-message" role="alert"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="nomina-fecha">Fecha *</label>
+                            <input 
+                                type="date" 
+                                id="nomina-fecha" 
+                                required 
+                                aria-required="true">
+                            <span class="validation-message" role="alert"></span>
+                        </div>
+                        <button type="submit" class="btn-submit" aria-label="Registrar pago de nómina">
+                            ✅ Registrar Pago
+                        </button>
+                    </form>
+                    
+                    <div class="records-list" id="nomina-list" role="list" aria-label="Lista de pagos de nómina"></div>
+                </article>
+            </section>
+            
+            <!-- TAB: GASTOS FIJOS -->
+            <section id="fijos" class="tab-content" role="tabpanel" aria-labelledby="fijos-tab" aria-hidden="true">
+                <article>
+                    <h2>🏢 Gastos Fijos</h2>
+                    
+                    <!-- Search Filter -->
+                    <div class="search-filter">
+                        <label for="search-fijos" class="visually-hidden">Buscar gastos fijos</label>
+                        <input 
+                            type="search" 
+                            id="search-fijos" 
+                            class="search-input" 
+                            data-section="fijos"
+                            placeholder="🔍 Buscar gastos fijos..." 
+                            aria-label="Buscar en gastos fijos">
+                    </div>
+                    
+                    <form onsubmit="FijosManager.add(event)" aria-label="Formulario para agregar gasto fijo">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="fijo-desc">Descripción *</label>
+                                <input 
+                                    type="text" 
+                                    id="fijo-desc" 
+                                    placeholder="Ej: Alquiler, Servicios" 
+                                    required 
+                                    aria-required="true"
+                                    minlength="3"
+                                    maxlength="100">
+                                <span class="validation-message" role="alert"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="fijo-monto">Monto Mensual (RD$) *</label>
+                                <input 
+                                    type="number" 
+                                    id="fijo-monto" 
+                                    placeholder="0.00" 
+                                    step="0.01" 
+                                    min="0.01"
+                                    required 
+                                    aria-required="true">
+                                <span class="validation-message" role="alert"></span>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-submit" aria-label="Agregar gasto fijo">
+                            ✅ Agregar Gasto Fijo
+                        </button>
+                    </form>
+                    
+                    <div class="records-list" id="fijos-list" role="list" aria-label="Lista de gastos fijos"></div>
+                </article>
+            </section>
+            
+            <!-- TAB: REPORTES -->
+            <section id="reportes" class="tab-content" role="tabpanel" aria-labelledby="reportes-tab" aria-hidden="true">
+                <article>
+                    <h2>📈 Resumen y Reportes</h2>
+                    <div class="summary" id="resumen-cards" role="region" aria-label="Resumen financiero"></div>
+                    
+                    <div style="margin-top: 20px;">
+                        <button 
+                            class="export-btn" 
+                            onclick="ExportManager.toCSV()" 
+                            aria-label="Descargar datos en formato CSV"
+                            title="Exportar todos los datos a archivo CSV">
+                            📥 Descargar CSV
+                        </button>
+                        <button 
+                            class="export-btn" 
+                            onclick="ExportManager.toClipboard()" 
+                            aria-label="Copiar datos al portapapeles"
+                            title="Copiar datos para pegar en Google Sheets">
+                            📋 Copiar a Google Sheets
+                        </button>
+                        <button 
+                            class="export-btn" 
+                            onclick="DataManager.clearAll()" 
+                            style="background: #ff6b6b;"
+                            aria-label="Eliminar todos los datos"
+                            title="Eliminar todos los datos del sistema">
+                            🗑️ Limpiar Todo
+                        </button>
+                    </div>
+                </article>
+            </section>
+        </main>
+        
+        <!-- Footer -->
+        <footer role="contentinfo">
+            <p>&copy; 2026 <strong>PuchuvoRed</strong></p>
+            <p>Sistema de Gestión Financiera - Contabilidad Lotto</p>
+            <p>Todos los datos se almacenan localmente en tu navegador</p>
+        </footer>
+    </div>
+    
+    <!-- Mobile Menu Toggle (hidden on desktop) -->
+    <button 
+        class="mobile-menu-toggle" 
+        onclick="MobileMenu.toggle()" 
+        aria-label="Toggle mobile menu"
+        title="Mostrar/Ocultar menú">
+        ☰
+    </button>
+    
+    <!-- JavaScript -->
+    <script src="js/app.js"></script>
 </body>
 </html>
